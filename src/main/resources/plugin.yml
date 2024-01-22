@@ -1,0 +1,23 @@
+name: Pogoin_Shepherd
+version: Umm...
+api-version: 1.20
+main: taewookim.PSHEP
+
+permissions:
+  shepherd.admin:
+    default: op
+
+commands:
+  게임:
+    permission: shepherd.admin
+  납품:
+    permission: shepherd.admin
+  양털증가:
+    permission: shepherd.admin
+  양털룰렛스킵:
+    permission: shepherd.admin
+  알지급:
+    permission: shepherd.admin
+
+depend:
+  - CatFish

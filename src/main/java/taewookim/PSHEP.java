@@ -257,6 +257,7 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static void increacewool(CommandSender commandSender, Integer i1, Integer i2, String... strings) {
         if(isGameing) {
             roulettes.add(new Roulette(r.nextInt(i2-i1)+i1));
+            Bukkit.getConsoleSender().sendMessage("/addScoreboard");
         }else {
             commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
         }
@@ -270,6 +271,7 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static void helpeggs(CommandSender commandSender, Integer i1, Integer i2, String... strings) {
         if(isGameing) {
             roulettes.add(new HelpRoulette(r.nextInt(i2-i1)+i1));
+            Bukkit.getConsoleSender().sendMessage("/addScoreboard");
         }else {
             commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
         }

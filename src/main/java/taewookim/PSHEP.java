@@ -17,15 +17,20 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldSaveEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.gang.pogoinscoreboard.PogoinScoreboard;
 
 import java.io.File;
 import java.util.*;
@@ -54,6 +59,7 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static int roulette_start = 20;
     public static int roulette_ing = 50;
     public static int roulette_final = 20;
+    public static PogoinScoreboard scoreboard;
 
     public static ArrayList<Roulette> roulettes = new ArrayList<>();
     public BossBar bar;
@@ -257,7 +263,9 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static void increacewool(CommandSender commandSender, Integer i1, Integer i2, String... strings) {
         if(isGameing) {
             roulettes.add(new Roulette(r.nextInt(i2-i1)+i1));
-            Bukkit.getConsoleSender().sendMessage("/addScoreboard");
+            if(scoreboard!=null) {
+                scoreboard.increaseWool();
+            }
         }else {
             commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
         }
@@ -271,10 +279,13 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static void helpeggs(CommandSender commandSender, Integer i1, Integer i2, String... strings) {
         if(isGameing) {
             roulettes.add(new HelpRoulette(r.nextInt(i2-i1)+i1));
-            Bukkit.getConsoleSender().sendMessage("/addScoreboard");
+            if(scoreboard!=null) {
+                scoreboard.increaseWool();
+            }
         }else {
             commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
         }
+
     }
 
     @Override
@@ -284,6 +295,9 @@ public class PSHEP extends JavaPlugin implements Listener {
             System.out.println("CatFish플러그인을 로드하지 못했습니다. 플러그인을 종료합니다.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
+        }
+        if(Bukkit.getPluginManager().isPluginEnabled("PogoinScoreboard")) {
+            scoreboard = (PogoinScoreboard) Bukkit.getPluginManager().getPlugin("PogoinScoreboard");
         }
         loadConfig();
         loadConfig1();
@@ -404,5 +418,24 @@ public class PSHEP extends JavaPlugin implements Listener {
     @EventHandler
     public void quit(PlayerQuitEvent e) {
         bar.removePlayer(e.getPlayer());
+    }
+
+    @EventHandler
+    public void death(PlayerDeathEvent e) {
+        if(isGameing) {
+            e.setKeepInventory(true);
+            Inventory inv = e.getEntity().getInventory();
+            e.getDrops().clear();
+            for(int i = 0; i<inv.getSize(); i++) {
+                if(inv.getItem(i)!=null) {
+                    Material m = inv.getItem(i).getType();
+                    if(!m.equals(Material.WOODEN_SWORD)&&!m.equals(Material.STONE_SWORD)
+                    &&!m.equals(Material.IRON_SWORD)&&!m.equals(Material.DIAMOND_SWORD)&&!m.equals(Material.NETHERITE_SWORD)
+                    &&!m.equals(Material.SHEARS)) {
+                        inv.setItem(i, new ItemStack(Material.AIR));
+                    }
+                }
+            }
+        }
     }
 }

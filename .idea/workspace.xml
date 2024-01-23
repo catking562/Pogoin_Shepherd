@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="547f76f6-92b6-4dd7-aa53-a93ef7630089" name="Changes" comment="롤렛 추가시 스코어보드증가 명령어 실행">
+    <list default="true" id="547f76f6-92b6-4dd7-aa53-a93ef7630089" name="Changes" comment="스코어보드 플러그인 연결">
+      <change afterPath="$PROJECT_DIR$/src/main/java/taewookim/DebuffRoulette.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/taewookim/PSHEP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/taewookim/PSHEP.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +19,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -40,7 +43,7 @@
     "git-widget-placeholder": "master",
     "jdk.selected.JAVA_MODULE": "jbrsdk-17",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/서버/1.20.4/plugins/testplugin-1.0-all.jar",
+    "last_opened_file_path": "C:/Users/Cat/Desktop/testplugin-1.0-all (3).jar",
     "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
@@ -79,12 +82,21 @@
       <option name="project" value="LOCAL" />
       <updated>1705937531154</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="스코어보드 플러그인 연결">
+      <option name="closed" value="true" />
+      <created>1706010996052</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1706010996052</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ㅇ" />
     <MESSAGE value="롤렛 추가시 스코어보드증가 명령어 실행" />
-    <option name="LAST_COMMIT_MESSAGE" value="롤렛 추가시 스코어보드증가 명령어 실행" />
+    <MESSAGE value="스코어보드 플러그인 연결" />
+    <option name="LAST_COMMIT_MESSAGE" value="스코어보드 플러그인 연결" />
   </component>
 </project>

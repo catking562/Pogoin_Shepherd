@@ -64,6 +64,10 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static ArrayList<Roulette> roulettes = new ArrayList<>();
     public BossBar bar;
 
+    public ArrayList<Roulette> getRoulettes() {
+        return roulettes;
+    }
+
     public static void Title(String string, String string1) {
         for(Player p : Bukkit.getOnlinePlayers()) {
             p.sendTitle(string, string1);
@@ -90,6 +94,7 @@ public class PSHEP extends JavaPlugin implements Listener {
                     roulettes.get(0).Update();
                     if(roulettes.get(0).isEnd) {
                         roulettes.remove(0);
+                        scoreboard.increaseWool(roulettes.size());
                     }
                 }
                 double d = ((double)price)/((double)max);
@@ -264,7 +269,7 @@ public class PSHEP extends JavaPlugin implements Listener {
         if(isGameing) {
             roulettes.add(new Roulette(r.nextInt(i2-i1)+i1));
             if(scoreboard!=null) {
-                scoreboard.increaseWool();
+                scoreboard.increaseWool(roulettes.size());
             }
         }else {
             commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
@@ -280,7 +285,7 @@ public class PSHEP extends JavaPlugin implements Listener {
         if(isGameing) {
             roulettes.add(new HelpRoulette(r.nextInt(i2-i1)+i1));
             if(scoreboard!=null) {
-                scoreboard.increaseWool();
+                scoreboard.increaseWool(roulettes.size());
             }
         }else {
             commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
@@ -295,9 +300,6 @@ public class PSHEP extends JavaPlugin implements Listener {
             System.out.println("CatFish플러그인을 로드하지 못했습니다. 플러그인을 종료합니다.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
-        }
-        if(Bukkit.getPluginManager().isPluginEnabled("PogoinScoreboard")) {
-            scoreboard = (PogoinScoreboard) Bukkit.getPluginManager().getPlugin("PogoinScoreboard");
         }
         loadConfig();
         loadConfig1();
@@ -396,6 +398,14 @@ public class PSHEP extends JavaPlugin implements Listener {
         for(Player p : Bukkit.getOnlinePlayers()) {
             bar.addPlayer(p);
         }
+        BukkitRunnable brun = new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(Bukkit.getPluginManager().isPluginEnabled("PogoinScoreboard")) {
+                    scoreboard = (PogoinScoreboard) Bukkit.getPluginManager().getPlugin("PogoinScoreboard");
+                }
+            }
+        };brun.runTaskLater(this, 20);
     }
 
     @Override

@@ -18,6 +18,7 @@ commands:
     permission: shepherd.admin
   알지급:
     permission: shepherd.admin
-
+  디버프:
+    permission: shepherd.admin
 depend:
   - CatFish

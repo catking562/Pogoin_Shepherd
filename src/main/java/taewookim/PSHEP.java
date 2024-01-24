@@ -9,6 +9,7 @@ import org.CatAndDomi.components.message.MessageComponent;
 import org.CatAndDomi.components.pageinventory.PageInventoryComponent;
 import org.CatAndDomi.utils.InventoryUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
@@ -21,8 +22,10 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldSaveEvent;
@@ -30,6 +33,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.gang.pogoinscoreboard.PogoinScoreboard;
 
 import java.io.File;
@@ -63,10 +67,14 @@ public class PSHEP extends JavaPlugin implements Listener {
 
     public static ArrayList<Roulette> roulettes = new ArrayList<>();
     public BossBar bar;
+    public BossBar bar1;
 
     public ArrayList<Roulette> getRoulettes() {
         return roulettes;
     }
+
+    public static Map<String, ShepherdArea> areamap = new HashMap<>();
+    public static Map<Player, AreaSetter> settermap = new HashMap<>();
 
     public static void Title(String string, String string1) {
         for(Player p : Bukkit.getOnlinePlayers()) {
@@ -100,9 +108,13 @@ public class PSHEP extends JavaPlugin implements Listener {
                 double d = ((double)price)/((double)max);
                 bar.setProgress(d<1?d:1);
                 bar.setTitle(isGameing?mc.getString("BossbarName").replace("<COUNT>", price+"").replace("<MAX>", max+""):mc.getString("게임준비중"));
+                int count = 0;
+                for(Map.Entry<String, ShepherdArea> entry : areamap.entrySet()) {
+                    count+=entry.getValue().getSheeps();
+                }
+                bar1.setTitle(isGameing?mc.getString("Bossbar1Name").replace("<COUNT>", count+""):mc.getString("게임준비중"));
             }
         };brun.runTaskTimer(this, 0, 0);
-
         BukkitRunnable brun1 = new BukkitRunnable() {
             @Override
             public void run() {
@@ -141,6 +153,18 @@ public class PSHEP extends JavaPlugin implements Listener {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void loadConfig2() {
+        File file = new File(getDataFolder()+"/areadata.yml");
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        if(config.isSet("arealist")) {
+            for(String string : config.getStringList("arealist")) {
+                File file1 = new File(getDataFolder()+"/areadata/"+string+".yml");
+                YamlConfiguration config1 = YamlConfiguration.loadConfiguration(file1);
+                areamap.put(string, new ShepherdArea(config1));
+            }
+        }
     }
 
     public void loadConfig1() {
@@ -207,6 +231,25 @@ public class PSHEP extends JavaPlugin implements Listener {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         config.set("price", price);
         config.set("max", max);
+        try{
+            config.save(file);
+        }catch(Exception e) {
+        }
+        //save2
+        ArrayList<String> arealist = new ArrayList<>();
+        for(Map.Entry<String, ShepherdArea> entry : areamap.entrySet()) {
+            arealist.add(entry.getKey());
+            file = new File(getDataFolder()+"/areadata/"+entry.getKey()+".yml");
+            config = YamlConfiguration.loadConfiguration(file);
+            entry.getValue().save(config);
+            try{
+                config.save(file);
+            }catch(Exception e) {
+            }
+        }
+        file = new File(getDataFolder()+"/areadata.yml");
+        config = YamlConfiguration.loadConfiguration(file);
+        config.set("arealist", arealist);
         try{
             config.save(file);
         }catch(Exception e) {
@@ -281,6 +324,17 @@ public class PSHEP extends JavaPlugin implements Listener {
         commandSender.sendMessage(mc.getString("접두어") + mc.getString("롤렛스킵설정").replace("<VAULE>", isskip+""));
     }
 
+    public static void addDebuff(CommandSender commandSender, String... strings) {
+        if(isGameing) {
+            roulettes.add(new DebuffRoulette(10));
+            if(scoreboard!=null) {
+                scoreboard.increaseWool(roulettes.size());
+            }
+        }else {
+            commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
+        }
+    }
+
     public static void helpeggs(CommandSender commandSender, Integer i1, Integer i2, String... strings) {
         if(isGameing) {
             roulettes.add(new HelpRoulette(r.nextInt(i2-i1)+i1));
@@ -293,6 +347,33 @@ public class PSHEP extends JavaPlugin implements Listener {
 
     }
 
+    public static void sheepareasetting(CommandSender commandSender, String name, String... strings) {
+        if(commandSender instanceof Player p) {
+            p.sendMessage(mc.getString("접두어") + mc.getString("영역설정").replace("<POS>", mc.getString("pos1")));
+            settermap.put(p, new AreaSetter(name));
+        }
+    }
+
+    public static void sheeparealist(CommandSender commandSender, String... strings) {
+        commandSender.sendMessage(mc.getString("접두어")+mc.getString("양영역정보"));
+        for(Map.Entry<String, ShepherdArea> entry : areamap.entrySet()) {
+            Location loc = entry.getValue().mid;
+            Vector size = entry.getValue().size;
+            commandSender.sendMessage(mc.getString("접두어")+mc.getString("양영역정보1")
+                    .replace("<NAME>", entry.getKey())
+                    .replace("<LOC>", mc.getString("loc").replace("<X>", ((int)loc.getX())+"").replace("<Y>", ((int)loc.getY())+"").replace("<Z>", ((int)loc.getZ())+""))
+                    .replace("<DX>", ((int)size.getX())+"")
+                    .replace("<DY>", ((int)size.getY())+"")
+                    .replace("<DZ>", ((int)size.getZ())+"")
+            );
+        }
+    }
+
+    public static void sheepareadelete(CommandSender commandSender, String name, String... strings) {
+        areamap.remove(name);
+        commandSender.sendMessage(mc.getString("접두어") + mc.getString("영역삭제완료"));
+    }
+
     @Override
     public void onEnable() {
         super.onEnable();
@@ -303,6 +384,7 @@ public class PSHEP extends JavaPlugin implements Listener {
         }
         loadConfig();
         loadConfig1();
+        loadConfig2();
         r = new Random();
         new CatFishBuilder(this)
                 .addComponents(ComponentType.COMMAND)
@@ -345,6 +427,16 @@ public class PSHEP extends JavaPlugin implements Listener {
                 .addMessages("게임준비중", "게임 준비중")
                 .addMessages("양털감소타이틀1", "&a<NUM>개")
                 .addMessages("양털감소타이틀2", "&c최대 개수에 도달하여 이미 납품한 양털의 개수에서 차감됩니다.")
+                .addMessages("Bossbar1Name", "현재 양 마리수 : <COUNT>")
+                .addMessages("영역설정", "블럭에 좌클릭을 해서 <POS>를 설정해주세요.")
+                .addMessages("pos1", "pos1")
+                .addMessages("pos2", "pos2")
+                .addMessages("영역설정완료", "<POS>를 <LOC>로 설정하였습니다.")
+                .addMessages("loc", "(x:<X>, y:<Y>, z:<Z>)")
+                .addMessages("영역생성완료", "<NAME>영역이 성공적으로 생성되었습니다.")
+                .addMessages("양영역정보", "양영역정보:")
+                .addMessages("양영역정보1", "<NAME>= 중심:<LOC>, 크기:(x:<DX>, y:<DY>, z:<DZ>)")
+                .addMessages("영역삭제완료", "<NAME>영역이 성공적으로 삭제되었습니다.")
                 .load();
         //커맨드
         try{
@@ -383,6 +475,26 @@ public class PSHEP extends JavaPlugin implements Listener {
                     , new ArgsTypes[]{ArgsTypes.INTEGER, ArgsTypes.INTEGER}, mc.getString("접두어") + "/알지급 <최소> <최대> - 지정된 값만큼 모든 유저에게 알을 지급하는 롤렛을 돌립니다."
                     , "알지급"
             );
+            cc.addCommand(
+                    this.getClass().getMethod("addDebuff", CommandSender.class, String[].class)
+                    , new ArgsTypes[]{}, mc.getString("접두어") + "/디버프 - 디버프를 줍니다."
+                    , "디버프"
+            );
+            cc.addCommand(
+                    this.getClass().getMethod("sheepareasetting", CommandSender.class, String.class, String[].class)
+                    , new ArgsTypes[]{ArgsTypes.STRING}, mc.getString("접두어") + "/양영역설정 <이름> - 양영역을 설정합니다."
+                    , "양영역설정"
+            );
+            cc.addCommand(
+                    this.getClass().getMethod("sheeparealist", CommandSender.class, String[].class)
+                    , new ArgsTypes[]{}, mc.getString("접두어") + "/양영역정보 - 설정된 양영역의 정보를 표시합니다."
+                    , "양영역정보"
+            );
+            cc.addCommand(
+                    this.getClass().getMethod("sheepareadelete", CommandSender.class, String.class, String[].class)
+                    , new ArgsTypes[]{ArgsTypes.STRING}, mc.getString("접두어") + "/양영역삭제 <이름> - 양영역을 삭제합니다."
+                    , "양영역삭제"
+            );
         }catch(Exception e) {
         }
         cc.load();
@@ -392,12 +504,19 @@ public class PSHEP extends JavaPlugin implements Listener {
         pic.getInventory("납품").addpage();
         pic.load();
         Bukkit.getPluginManager().registerEvents(this, this);
+        //업데이트
         Update();
+        //보스바
         bar = Bukkit.createBossBar(mc.getString("BossbarName").replace("<COUNT>", price+"").replace("<MAX>", max+""), BarColor.WHITE, BarStyle.SOLID);
         bar.setVisible(true);
+        bar1 = Bukkit.createBossBar(mc.getString("Bossbar1Name").replace("<COUNT>", "0"), BarColor.WHITE, BarStyle.SOLID);
+        bar1.setVisible(true);
+        bar1.setProgress(1);
         for(Player p : Bukkit.getOnlinePlayers()) {
             bar.addPlayer(p);
+            bar1.addPlayer(p);
         }
+        //스코어보드 플러그인 로드
         BukkitRunnable brun = new BukkitRunnable() {
             @Override
             public void run() {
@@ -413,6 +532,7 @@ public class PSHEP extends JavaPlugin implements Listener {
         super.onDisable();
         save();
         bar.removeAll();
+        bar1.removeAll();
     }
 
     @EventHandler
@@ -423,11 +543,14 @@ public class PSHEP extends JavaPlugin implements Listener {
     @EventHandler
     public void join(PlayerJoinEvent e) {
         bar.addPlayer(e.getPlayer());
+        bar1.addPlayer(e.getPlayer());
     }
 
     @EventHandler
     public void quit(PlayerQuitEvent e) {
         bar.removePlayer(e.getPlayer());
+        bar1.removePlayer(e.getPlayer());
+        settermap.remove(e.getPlayer());
     }
 
     @EventHandler
@@ -446,6 +569,28 @@ public class PSHEP extends JavaPlugin implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void inter(PlayerInteractEvent e) {
+        if(settermap.get(e.getPlayer())!=null&&e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+            AreaSetter setter = settermap.get(e.getPlayer());
+            if(setter.pos1!=null) {
+                Vector v1 = setter.pos1;
+                Vector v2 = e.getClickedBlock().getLocation().toVector().add(new Vector(0.5, 0.5, 0.5));
+                e.getPlayer().sendMessage(mc.getString("접두어") + mc.getString("영역설정완료").replace("<POS>", mc.getString("pos2")).replace("<LOC>", mc.getString("loc").replace("<X>", ((int)v2.getX())+"").replace("<Y>", ((int)v2.getY())+"").replace("<Z>", ((int)v2.getZ())+"")));
+                ShepherdArea area = new ShepherdArea(new Location(e.getClickedBlock().getWorld(), (v1.getX()+v2.getX())*0.5D, (v1.getY()+v2.getY())*0.5D, (v1.getZ()+v2.getZ())*0.5D), v1.clone().add(v2.clone().multiply(-1D)).multiply(0.5D));
+                areamap.put(setter.string, area);
+                settermap.remove(e.getPlayer());
+                e.getPlayer().sendMessage(mc.getString("접두어") + mc.getString("영역생성완료").replace("<NAME>", setter.string));
+            }else {
+                setter.pos1=e.getClickedBlock().getLocation().toVector().add(new Vector(0.5, 0.5, 0.5));
+                Vector v1 = setter.pos1;
+                e.getPlayer().sendMessage(mc.getString("접두어") + mc.getString("영역설정완료").replace("<POS>", mc.getString("pos1")).replace("<LOC>", mc.getString("loc").replace("<X>", ((int)v1.getX())+"").replace("<Y>", ((int)v1.getY())+"").replace("<Z>", ((int)v1.getZ())+"")));
+            }
+            e.getPlayer().playSound(e.getPlayer(), Sound.BLOCK_NOTE_BLOCK_HARP, 1, 1.5f);
+            e.setCancelled(true);
         }
     }
 }

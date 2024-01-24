@@ -20,5 +20,12 @@ commands:
     permission: shepherd.admin
   디버프:
     permission: shepherd.admin
+  양영역정보:
+    permission: shepherd.admin
+  양영역설정:
+    permission: shepherd.admin
+  양영역삭제:
+    permission: shepherd.admin
+
 depend:
   - CatFish

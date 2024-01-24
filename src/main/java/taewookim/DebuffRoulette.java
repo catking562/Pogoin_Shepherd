@@ -11,7 +11,9 @@ public class DebuffRoulette extends Roulette {
     @Override
     public void Update() {
         tick++;
-        PSHEP.scoreboard.addDebuff(PSHEP.roulettes.size());
+        if(tick==1) {
+            PSHEP.scoreboard.addDebuff(PSHEP.roulettes.size());
+        }
         if(tick>90) {
             isEnd = true;
         }

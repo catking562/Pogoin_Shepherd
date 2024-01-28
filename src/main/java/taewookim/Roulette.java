@@ -24,7 +24,7 @@ public class Roulette {
 
     public void Update() {
         if(PSHEP.isskip) {
-            PSHEP.addcount(i);
+            PSHEP.addcount(i, true);
             isEnd = true;
             PSHEP.Title(PSHEP.mc.getString("양털증가타이틀3").replace("<NUM>", i+""), PSHEP.mc.getString("양털증가타이틀4").replace("<NUM>", i+""), 0, 20, 10);
         }
@@ -65,7 +65,7 @@ public class Roulette {
                 b++;
                 if(b==1) {
                     PSHEP.Sound(Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-                    PSHEP.addcount(i);
+                    PSHEP.addcount(i, true);
                 }
                 if(PSHEP.roulette_final<b) {
                     isEnd = true;

@@ -112,7 +112,7 @@ public class PSHEP extends JavaPlugin implements Listener {
                 for(Map.Entry<String, ShepherdArea> entry : areamap.entrySet()) {
                     count+=entry.getValue().getSheeps();
                 }
-                bar1.setTitle(isGameing?mc.getString("Bossbar1Name").replace("<COUNT>", count+""):mc.getString("게임준비중"));
+                bar1.setTitle(mc.getString("Bossbar1Name").replace("<COUNT>", count+""));
             }
         };brun.runTaskTimer(this, 0, 0);
         BukkitRunnable brun1 = new BukkitRunnable() {
@@ -256,10 +256,12 @@ public class PSHEP extends JavaPlugin implements Listener {
         }
     }
 
-    public static void addcount(int a) {
+    public static void addcount(int a, boolean b) {
         if(max+a>maxtomax) {
             int i = a-(maxtomax-max);
-            PSHEP.Title(PSHEP.mc.getString("양털감소타이틀1").replace("<NUM>", i+""), PSHEP.mc.getString("양털감소타이틀2").replace("<NUM>", i+""), 0, 20, 10);
+            if(b) {
+                PSHEP.Title(PSHEP.mc.getString("양털감소타이틀1").replace("<NUM>", i+""), PSHEP.mc.getString("양털감소타이틀2").replace("<NUM>", i+""), 0, 20, 10);
+            }
             price-=i;
             max = maxtomax;
             if(price<0) {
@@ -267,7 +269,12 @@ public class PSHEP extends JavaPlugin implements Listener {
             }
         }else {
             max+=a;
-            PSHEP.Title(PSHEP.mc.getString("양털증가타이틀3").replace("<NUM>", a+""), PSHEP.mc.getString("양털증가타이틀4").replace("<NUM>", a+""), 0, 20, 10);
+            if(b) {
+                PSHEP.Title(PSHEP.mc.getString("양털증가타이틀3").replace("<NUM>", a+""), PSHEP.mc.getString("양털증가타이틀4").replace("<NUM>", a+""), 0, 20, 10);
+            }
+        }
+        if(!b) {
+            PSHEP.Title(PSHEP.mc.getString("사망타이틀").replace("<COUNT>", a+""), PSHEP.mc.getString("사망타이틀1").replace("<COUNT>", a+""), 0, 20, 10);
         }
     }
 
@@ -437,6 +444,8 @@ public class PSHEP extends JavaPlugin implements Listener {
                 .addMessages("양영역정보", "양영역정보:")
                 .addMessages("양영역정보1", "<NAME>= 중심:<LOC>, 크기:(x:<DX>, y:<DY>, z:<DZ>)")
                 .addMessages("영역삭제완료", "<NAME>영역이 성공적으로 삭제되었습니다.")
+                .addMessages("사망타이틀", "&f[ &c사망하셨습니다. &f]")
+                .addMessages("사망타이틀1", "&e사망패널티로 양털이 <COUNT>개가 추가로 증가됩니다!")
                 .load();
         //커맨드
         try{
@@ -570,6 +579,7 @@ public class PSHEP extends JavaPlugin implements Listener {
                 }
             }
         }
+        addcount(200, false);
     }
 
     @EventHandler

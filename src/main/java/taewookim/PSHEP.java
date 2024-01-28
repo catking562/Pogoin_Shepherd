@@ -76,6 +76,8 @@ public class PSHEP extends JavaPlugin implements Listener {
     public static Map<String, ShepherdArea> areamap = new HashMap<>();
     public static Map<Player, AreaSetter> settermap = new HashMap<>();
 
+    public static boolean deathsound = false;
+
     public static void Title(String string, String string1) {
         for(Player p : Bukkit.getOnlinePlayers()) {
             p.sendTitle(string, string1);
@@ -138,6 +140,12 @@ public class PSHEP extends JavaPlugin implements Listener {
                         iscount = false;
                         realcount = 0;
                     }
+                }
+                if(deathsound) {
+                    deathsound = false;
+                    addcount(200, false);
+                    Sound(Sound.BLOCK_END_PORTAL_SPAWN, 100, 0);
+                    Sound(Sound.ENTITY_ENDER_DRAGON_AMBIENT, 100, 0);
                 }
             }
         };brun1.runTaskTimer(this, 20, 20);
@@ -578,8 +586,8 @@ public class PSHEP extends JavaPlugin implements Listener {
                     }
                 }
             }
+            deathsound = true;
         }
-        addcount(200, false);
     }
 
     @EventHandler

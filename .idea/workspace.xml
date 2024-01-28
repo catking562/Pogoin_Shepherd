@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="547f76f6-92b6-4dd7-aa53-a93ef7630089" name="Changes" comment=".">
+    <list default="true" id="547f76f6-92b6-4dd7-aa53-a93ef7630089" name="Changes" comment="agbfdsdf">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/taewookim/PSHEP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/taewookim/PSHEP.java" afterDir="false" />
     </list>
@@ -104,7 +104,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706136447268</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="agbfdsdf">
+      <option name="closed" value="true" />
+      <created>1706417003220</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1706417003220</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -113,6 +121,7 @@
     <MESSAGE value="스코어보드 플러그인 연결" />
     <MESSAGE value="아 힘드네" />
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="agbfdsdf" />
+    <option name="LAST_COMMIT_MESSAGE" value="agbfdsdf" />
   </component>
 </project>

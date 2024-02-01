@@ -334,6 +334,22 @@ public class PSHEP extends JavaPlugin implements Listener {
         }
     }
 
+    public static void decreacewool(CommandSender commandSender, Integer i1, Integer i2, String... strings) {
+        if(isGameing) {
+            roulettes.add(new DeRoulette(r.nextInt(i2-i1)+i1));
+            if(scoreboard!=null) {
+                scoreboard.increaseWool(roulettes.size());
+            }
+        }else {
+            commandSender.sendMessage(mc.getString("접두어") + mc.getString("게임시작false"));
+        }
+    }
+
+    public static void dewool(int i) {
+        max-=i;
+        PSHEP.Title(PSHEP.mc.getString("양털증가타이틀3").replace("<NUM>", i+""), PSHEP.mc.getString("양털증가이틀4").replace("<NUM>", i+""), 0, 20, 10);
+    }
+
     public static void setskip(CommandSender commandSender, String... strings) {
         isskip=!isskip;
         commandSender.sendMessage(mc.getString("접두어") + mc.getString("롤렛스킵설정").replace("<VAULE>", isskip+""));
@@ -425,6 +441,7 @@ public class PSHEP extends JavaPlugin implements Listener {
                 .addMessages("양털증가타이틀2", "&7양털 증가 룰렛 돌아가는중..")
                 .addMessages("양털증가타이틀3", "&a<NUM>개")
                 .addMessages("양털증가타이틀4", "&7남은 양털이 추가되었습니다.")
+                .addMessages("양털증가이틀4", "&7남은 양털이 감소하였습니다.")
                 .addMessages("시작타이틀1", "&f[ &c안내 &f]")
                 .addMessages("시작타이틀2", "&e양치기 타이쿤이 시작되었습니다.")
                 .addMessages("중지타이틀1", "&f[ &c안내 &f]")
@@ -511,6 +528,11 @@ public class PSHEP extends JavaPlugin implements Listener {
                     this.getClass().getMethod("sheepareadelete", CommandSender.class, String.class, String[].class)
                     , new ArgsTypes[]{ArgsTypes.STRING}, mc.getString("접두어") + "/양영역삭제 <이름> - 양영역을 삭제합니다."
                     , "양영역삭제"
+            );
+            cc.addCommand(
+                    this.getClass().getMethod("decreacewool", CommandSender.class, Integer.class, Integer.class, String[].class)
+                    , new ArgsTypes[]{ArgsTypes.INTEGER, ArgsTypes.INTEGER}, mc.getString("접두어") + "/양털감소 <정수> <정수> - 양털감소 롤렛을 돌립니다."
+                    , "양털감소"
             );
         }catch(Exception e) {
         }

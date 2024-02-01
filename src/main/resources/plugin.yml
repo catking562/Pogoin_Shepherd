@@ -14,6 +14,8 @@ commands:
     permission: shepherd.admin
   양털증가:
     permission: shepherd.admin
+  양털감소:
+    permission: shepherd.admin
   양털룰렛스킵:
     permission: shepherd.admin
   알지급:
